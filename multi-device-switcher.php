@@ -46,6 +46,7 @@ class Multi_Device_Switcher {
 	protected $cookie_name_pc_switcher = 'pc-switcher';
 
 	protected $device = '';
+	protected $server_ua = '';
 
 	public function __construct() {
 		if ( is_admin() ) {
@@ -61,6 +62,8 @@ class Multi_Device_Switcher {
 		}
 
 		add_action( 'plugins_loaded', array( $this, 'load_file' ) );
+
+		$this->server_ua = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
 	}
 
 	public function switch_theme() {
@@ -78,7 +81,6 @@ class Multi_Device_Switcher {
 		add_action( 'init', array( $this, 'session' ) );
 
 		$userAgent = $this->get_options_userAgent();
-		$server_ua = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
 
 		foreach ( array_reverse( $userAgent ) as $key => $val ) {
 			if ( ! preg_match( '/^custom_switcher_/', $key ) ) {
@@ -123,6 +125,11 @@ class Multi_Device_Switcher {
 			remove_filter( 'template', array( $this, 'get_template' ) );
 		}
 	}
+
+	public function overwrite_userAgent($ua) {
+		$this->$ua = $ua;
+  }
+
 
 	public function get_options_userAgent() {
 		$options = $this->get_options();
